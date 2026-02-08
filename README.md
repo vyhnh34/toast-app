@@ -1,91 +1,85 @@
-# Voice Agent Hackathon Template
+# 🍞 Toast AI: User Testing Simulator
 
-Welcome to the Voice Agent Hackathon! This template contains a ready-to-use voice agent built [LiveKit Agents](https://github.com/livekit/agents). All you need is a [LiveKit Cloud](https://cloud.livekit.io) project.
+**Toast AI** is a state-of-the-art voice agent designed to simulate user testing sessions. It can instantly pivot between various user personas, allowing you to test your product ideas against diverse (and often brutally honest) perspectives.
 
-This starter app is compatible with any [custom web/mobile frontend](https://docs.livekit.io/agents/start/frontend/) or [SIP-based telephony](https://docs.livekit.io/agents/start/telephony/).
+Built with [LiveKit Agents](https://github.com/livekit/agents), Toast leverages OpenAI for intelligence, Cartesia for lifelike expressive voices, and AssemblyAI for high-accuracy speech-to-text.
 
-## Setup
+## ✨ Features
 
-Step 1: Copy this repository (Click the green "Use this template" button on GitHub)  
-Step 2: Clone your new copy to your local machine  
-Step 3: Install dependencies using uv ([install uv here](https://docs.astral.sh/uv/getting-started/installation/) if needed)  
+- **Dynamic Roleplaying**: Switch personas mid-conversation to see how different users react.
+- **Brutally Honest Feedback**: No sugar-coating. Get the roast your product deserves.
+- **Low Latency**: Lightning-fast responses for a natural, conversational feel.
+- **Multimodal**: Supports voice, text, and rich data interaction.
+
+## 👥 Available Personas
+
+Toast can roleplay as several distinct characters, including:
+- **👴 Boomer Dad**: Skeptical, loves "the good old days," and struggles with modern tech jargon.
+- **🤳 Gen Z Intern**: Extremely online, uses high-slang, and cares about "the vibe."
+- **👔 The VC Bro**: Obsessed with "synergies," "scale," and "AI-first" pivots.
+- **🤱 Stressed Mom**: Has no time for fluff; needs things to work immediately for her kids.
+- **🛠️ The Engineer**: Highly technical, pedantic about performance, and hates unnecessary abstractions.
+
+## 🚀 Quick Start
+
+### 1. Setup
+
+Install dependencies using [uv](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```shell
-cd voice-agent-hackathon
 uv sync
 ```
 
-Step 4: Set up the environment by copying `.env.example` to `.env.local` and filling in the required values from your [LiveKit Cloud](https://cloud.livekit.io) project
+### 2. Configuration
+
+Copy `.env.example` to `.env.local` and fill in your LiveKit credentials:
 
 - `LIVEKIT_URL`
 - `LIVEKIT_API_KEY`
 - `LIVEKIT_API_SECRET`
+- `CARTESIA_API_KEY` (Required for lifelike voices)
+- `OPENAI_API_KEY`
+- `ASSEMBLYAI_API_KEY`
 
-You can load the LiveKit environment automatically using the [LiveKit CLI](https://docs.livekit.io/home/cli/cli-setup):
+### 3. Run the Agent
 
-```bash
-lk cloud auth
-lk app env -w -d .env.local
-```
-
-## Run the agent
-
-Before your first run, you must download certain models such as [Silero VAD](https://docs.livekit.io/agents/build/turns/vad/) and the [LiveKit turn detector](https://docs.livekit.io/agents/build/turns/turn-detector/):
+First, download the necessary VAD and turn-detection models:
 
 ```shell
 uv run python src/agent.py download-files
 ```
 
-Next, run this command to start the agent:
+Start the agent in development mode:
 
 ```shell
 uv run python src/agent.py dev
 ```
 
-Finally, open the [LiveKit Agents Playground](https://agents-playground.livekit.io/#cam=0&mic=1&screen=0&video=0&audio=1&chat=1&theme_color=cyan) to speak with your new agent!
+### 4. Start Testing
 
-## Tips for managing background noise
+Open the [LiveKit Agents Playground](https://agents-playground.livekit.io/) to start talking to Toast!
 
-If you're in a noisy hackathon environment, it may be tricky to test your agent. Here are some tips to help you:
+**Try saying:**
+- *"Switch to Boomer Dad"*
+- *"I want to talk to the VC Bro"*
+- *"What do you think of my new AI-powered toaster?*
 
-1. Use headphones with a microphone and noise isolation features (such as AirPods Pro) 
-2. Use the LiveKit [background voice cancellation](https://docs.livekit.io/home/cloud/noise-cancellation/) model (pre-installed in this template)
-3. Turn off your microphone in the [Agents Playground](https://agents-playground.livekit.io/#cam=0&mic=1&screen=0&video=0&audio=1&chat=1&theme_color=cyan) and use text input to test your agent instead.
+---
 
-## Custom frontend & telephony
+## 🛠️ Tech Stack
 
-Get started quickly with our pre-built frontend starter apps, or add telephony support:
+- **Platform**: [LiveKit Cloud](https://cloud.livekit.io)
+- **STT**: [AssemblyAI](https://www.assemblyai.com/)
+- **LLM**: [OpenAI GPT-4o-mini](https://openai.com/)
+- **TTS**: [Cartesia](https://cartesia.ai/)
+- **VAD**: [Silero](https://github.com/snakers4/silero-vad)
 
-| Platform | Link | Description |
-|----------|----------|-------------|
-| **Web** | [`livekit-examples/agent-starter-react`](https://github.com/livekit-examples/agent-starter-react) | Web voice AI assistant with React & Next.js |
-| **iOS/macOS** | [`livekit-examples/agent-starter-swift`](https://github.com/livekit-examples/agent-starter-swift) | Native iOS, macOS, and visionOS voice AI assistant |
-| **Flutter** | [`livekit-examples/agent-starter-flutter`](https://github.com/livekit-examples/agent-starter-flutter) | Cross-platform voice AI assistant app |
-| **React Native** | [`livekit-examples/agent-starter-react-native`](https://github.com/livekit-examples/agent-starter-react-native) | Native mobile app with React Native & Expo |
-| **Android** | [`livekit-examples/agent-starter-android`](https://github.com/livekit-examples/agent-starter-android) | Native Android app with Kotlin & Jetpack Compose |
-| **Web Embed** | [`livekit-examples/agent-starter-embed`](https://github.com/livekit-examples/agent-starter-embed) | Voice AI widget for any website |
-| **Telephony** | [📚 Documentation](https://docs.livekit.io/agents/start/telephony/) | Add inbound or outbound calling to your agent |
+## 🧪 Tests and Evals
 
-For advanced customization, see the [complete frontend guide](https://docs.livekit.io/agents/start/frontend/).
-
-## Tests and evals
-
-This project includes a complete suite of evals, based on the LiveKit Agents [testing & evaluation framework](https://docs.livekit.io/agents/build/testing/). To run them, use `pytest`.
+Run the test suite with:
 
 ```shell
 uv run pytest
 ```
 
-To run the tests in a CI environment, you must also [add repository secrets](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-what-your-workflow-does/using-secrets-in-github-actions) for `LIVEKIT_URL`, `LIVEKIT_API_KEY`, and `LIVEKIT_API_SECRET`.
-
-## Deploying to production
-
-This project is production-ready and includes a working `Dockerfile`. To deploy it to LiveKit Cloud or another environment, see the [deploying to production](https://docs.livekit.io/agents/ops/deployment/) guide.
-
-## Models
-
-This project uses LiveKit Inference with models from AssemblyAI, OpenAI, and Cartesia. No extra account is required to use these models, which have been selected for their quality and performance.
-
-Many more models are available, both through LiveKit Inference and through SDK plugins for a wide variety of third-party APIs. See the [LiveKit Agents documentation](https://docs.livekit.io/agents/models/) for a full list.
-
-Happy hacking!
+Happy testing with Toast! 🍞
