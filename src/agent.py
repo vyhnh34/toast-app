@@ -26,20 +26,9 @@ load_dotenv(".env.local")
 
 class Assistant(Agent):
     def __init__(self, persona_name="Helpful Assistant") -> None:
-        self.current_persona = get_persona(persona_name)
-
-        if self.current_persona and self.current_persona["name"] != "Helpful Assistant":
-            instructions = f"""You are roleplaying as {self.current_persona["name"]}.
-
-BACKSTORY: {self.current_persona["backstory"]}
-
-ROAST STYLE: {self.current_persona["roast_style"]}
-
-Stay in character at all times. React to the user's product ideas exactly as this persona would.
-Be brutally honest and entertaining. Your responses should be conversational and natural.
-No complex formatting, emojis, or asterisks - just natural speech."""
-        else:
-            instructions = """You are a helpful voice AI assistant for user testing simulation.
+        self.persona_name = persona_name
+        self.current_persona = None
+        instructions = """You are a helpful voice AI assistant for user testing simulation.
 
 Users can ask you to roleplay as different personas by saying "Talk to [Persona Name]".
 
@@ -50,6 +39,27 @@ Your responses are concise and conversational."""
 
         super().__init__(instructions=instructions)
         self._agent_session = None
+        print(f"Assistant initialized with default persona: {persona_name}")
+
+    async def initialize_persona(self):
+        """Async initialization of persona data"""
+        print(f"Fetching persona data for: {self.persona_name}")
+        persona = get_persona(self.persona_name)
+        if persona:
+            self.current_persona = persona
+            if persona["name"] != "Helpful Assistant":
+                self._instructions = f"""You are roleplaying as {persona['name']}.
+
+BACKSTORY: {persona['backstory']}
+
+ROAST STYLE: {persona['roast_style']}
+
+Stay in character at all times. React to the user's product ideas exactly as this persona would.
+Be brutally honest and entertaining. Your responses should be conversational and natural.
+No complex formatting, emojis, or asterisks - just natural speech."""
+            print(f"Persona initialized: {persona['name']}")
+        else:
+            print("Failed to fetch persona, using default instructions")
 
     async def switch_persona(self, persona_name: str):
         logger.info(f"Switching to persona: {persona_name}")
@@ -106,17 +116,20 @@ Be brutally honest and entertaining. Keep responses conversational."""
 async def entrypoint(ctx: JobContext):
     assistant = Assistant()
 
+    print("Initializing STT, LLM, and TTS...")
+    stt = deepgram.STT()
+    llm = anthropic.LLM(model="claude-3-5-sonnet-latest")
+    tts = cartesia.TTS(model="sonic-2", voice=DEFAULT_VOICE_ID)
+    print("Providers initialized")
+
     session = AgentSession(
-        stt=deepgram.STT(),
-        llm=anthropic.LLM(model="claude-3-5-sonnet-latest"),
-        tts=cartesia.TTS(
-            model="sonic-2",
-            voice=DEFAULT_VOICE_ID,
-        ),
-        turn_detection=MultilingualModel(),
+        stt=stt,
+        llm=llm,
+        tts=tts,
         vad=ctx.proc.userdata["vad"],
         preemptive_generation=True,
     )
+    print("AgentSession instance created")
 
     assistant._agent_session = session
 
@@ -134,6 +147,9 @@ async def entrypoint(ctx: JobContext):
         ),
     )
     print("Session started")
+
+    # Initialize persona data after session start to not block connection
+    await assistant.initialize_persona()
 
     print("Generating initial greeting...")
     await session.generate_reply(
