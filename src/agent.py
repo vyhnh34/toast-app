@@ -12,7 +12,7 @@ from livekit.agents import (
     WorkerOptions,
     cli,
 )
-from livekit.plugins import cartesia, noise_cancellation, silero
+from livekit.plugins import anthropic, cartesia, deepgram, noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 from notion_connector import get_persona
@@ -107,8 +107,8 @@ async def entrypoint(ctx: JobContext):
     assistant = Assistant()
 
     session = AgentSession(
-        stt="deepgram/nova-2/en-US",
-        llm="anthropic/claude-3-5-sonnet-latest",
+        stt=deepgram.STT(),
+        llm=anthropic.LLM(model="claude-3-5-sonnet-latest"),
         tts=cartesia.TTS(
             model="sonic-2",
             voice=DEFAULT_VOICE_ID,
