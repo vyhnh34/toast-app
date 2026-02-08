@@ -34,8 +34,7 @@ Users can ask you to roleplay as different personas by saying "Talk to [Persona 
 
 Available personas: Boomer Dad, Gen Z Intern, The VC Bro, Stressed Mom, The Engineer
 
-You eagerly assist users by testing their product ideas from different perspectives.
-Your responses are concise and conversational."""
+IMPORTANT: Keep responses SHORT (1-2 sentences). NEVER use asterisks or action descriptions like *clears throat* or *squints*. Just speak naturally."""
 
         super().__init__(instructions=instructions)
         self._agent_session = None
@@ -54,9 +53,8 @@ BACKSTORY: {persona['backstory']}
 
 ROAST STYLE: {persona['roast_style']}
 
-Stay in character at all times. React to the user's product ideas exactly as this persona would.
-Be brutally honest and entertaining. Your responses should be conversational and natural.
-No complex formatting, emojis, or asterisks - just natural speech."""
+Stay in character. Be brutally honest and SHORT (1-2 sentences max).
+NEVER use asterisks or action descriptions like *clears throat* or *squints*. Just speak naturally."""
             print(f"Persona initialized: {persona['name']}")
         else:
             print("Failed to fetch persona, using default instructions")
@@ -76,7 +74,8 @@ BACKSTORY: {new_persona["backstory"]}
 ROAST STYLE: {new_persona["roast_style"]}
 
 Stay in character. React to product ideas as this persona would.
-Be brutally honest and entertaining. Keep responses conversational."""
+Be brutally honest and entertaining. Keep responses SHORT (1-2 sentences).
+NEVER use asterisks or action descriptions like *clears throat* - just speak naturally."""
             else:
                 new_instructions = """You are a helpful voice AI assistant for user testing simulation."""
 
@@ -85,21 +84,23 @@ Be brutally honest and entertaining. Keep responses conversational."""
             # Switch voice using the TTS update_options method
             if self._agent_session:
                 voice_id = new_persona.get("voice_id") or DEFAULT_VOICE_ID
+                print(f"[VOICE SWITCH] Attempting to switch to voice_id: {voice_id}")
                 logger.info(f"Switching Cartesia voice to: {voice_id}")
                 logger.info(f"Current TTS instance: {self._agent_session.tts}")
 
                 try:
                     # Update the voice on the existing TTS instance via session.tts property
                     tts_instance = self._agent_session.tts
+                    print(f"[VOICE SWITCH] TTS instance: {tts_instance}")
                     if tts_instance:
-                        logger.info(
-                            f"TTS instance found: {tts_instance}, updating voice..."
-                        )
+                        print(f"[VOICE SWITCH] Calling update_options with voice={voice_id}")
                         tts_instance.update_options(voice=voice_id)
+                        print(f"[VOICE SWITCH] Successfully updated voice to {voice_id}")
                         logger.info(
                             f"Successfully switched voice to {voice_id} for {new_persona['name']}"
                         )
                     else:
+                        print("[VOICE SWITCH] ERROR: No TTS instance available!")
                         logger.error("No TTS instance available on session!")
 
                 except Exception as e:
@@ -118,7 +119,7 @@ async def entrypoint(ctx: JobContext):
 
     print("Initializing STT, LLM, and TTS...")
     stt = deepgram.STT()
-    llm = anthropic.LLM(model="claude-3-5-sonnet-latest")
+    llm = anthropic.LLM(model="claude-3-haiku-20240307")
     tts = cartesia.TTS(model="sonic-2", voice=DEFAULT_VOICE_ID)
     print("Providers initialized")
 
@@ -160,7 +161,7 @@ async def entrypoint(ctx: JobContext):
             "Ask them which persona they'd like to talk to, or what product idea they want to test. "
             "Keep it brief, friendly, and enthusiastic."
         ),
-        allow_interruptions=False,
+        allow_interruptions=True,
     )
     print("Initial greeting generated")
 
@@ -234,7 +235,7 @@ async def entrypoint(ctx: JobContext):
                             "Then ask what product they want you to test. "
                             "Stay in character!"
                         ),
-                        allow_interruptions=False,
+                        allow_interruptions=True,
                     )
         except Exception as e:
             print(f"[ERROR] Exception in _handle_user_speech: {e}")

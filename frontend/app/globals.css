@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root {
+  --font-inter: "Inter", sans-serif;
+}
+
+body {
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Custom button styles for Toast UI */
+.toast-btn-start {
+  @apply px-12 py-3 rounded-full border-2 border-gray-400 text-black font-semibold text-lg transition-colors;
+}
+
+.toast-btn-start:hover {
+  @apply bg-gray-100;
+}
+
+.toast-btn-stop {
+  @apply px-12 py-3 rounded-full font-semibold text-lg transition-colors;
+  background-color: #e7c99b;
+  color: #000;
+}
+
+.toast-btn-stop:hover {
+  opacity: 0.9;
+}
+
+/* Override LiveKit default styles */
+[data-lk-theme="default"] {
+  --lk-bg: transparent;
+}
